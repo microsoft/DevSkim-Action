@@ -4,6 +4,8 @@ echo '$1 = ' $1
 echo '$2 = ' $2
 echo '$3 = ' $3
 
+dotnet tool install -g Microsoft.CST.DevSkim.Cli
+
 if [ "$1" == "GITHUB_WORKSPACE" ]
     $Directory = $GITHUB_WORKSPACE
 else

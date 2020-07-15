@@ -4,6 +4,28 @@ DevSkim is security linter available both as IDE extensions and as a GitHub Acti
 
 https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/uploading-a-sarif-file-to-github
 
+## Usage
+
+Add DevSkim to your GitHub Actions pipeline like below.
+
+```
+    - uses: actions/checkout@v2
+    - uses: microsoft/devskim-action@v1
+    - uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: devskim-results.sarif
+```
+
+You can also specify a number of options to the action.
+
+```
+    - uses: microsoft/devskim-action@v1
+      with:
+        directory-to-scan: path/to/scan
+        should-scan-archives: false
+        output-filename: devskim-results.sarif
+```
+
 ### Features
 
 * Built-in rules, and support for writing custom rules
