@@ -18,7 +18,7 @@ else
 fi
 
 if [ "$2" = "true" ]; then
-    /tools/devskim analyze $ScanTarget -f sarif -c > $OutputDirectory/$3
-else
-    /tools/devskim analyze $ScanTarget -f sarif > $OutputDirectory/$3
+    Opts = "-c"
 fi
+
+/tools/devskim analyze "$ScanTarget" "$OutputDirectory/$3" -f sarif $Opts
