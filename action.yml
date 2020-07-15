@@ -14,7 +14,7 @@ inputs:
     required: false
     default: "devskim-results.sarif"
   output-directory:
-    description: 'The directory for the output.'
+    description: 'The sub directory for the output under GITHUB_WORKSPACE.'
     required: false
     default: "GITHUB_WORKSPACE"
 outputs:

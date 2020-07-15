@@ -14,7 +14,7 @@ fi
 if [ "$4" = "GITHUB_WORKSPACE" ]; then
     OutputDirectory=$GITHUB_WORKSPACE
 else
-    OutputDirectory=$4
+    OutputDirectory=$GITHUB_WORKSPACE/$4
 fi
 
 if [ "$2" = "true" ]; then
