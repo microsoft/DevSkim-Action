@@ -2,8 +2,6 @@
 
 DevSkim is security linter available both as IDE extensions and as a GitHub Action.  The DevSkim GitHub action outputs a sarif file compatible with GitHub's security issues view.
 
-https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/uploading-a-sarif-file-to-github
-
 ## Usage
 
 Add DevSkim to your GitHub Actions pipeline like below.
@@ -28,7 +26,7 @@ You can also specify a number of options to the action.
 
 ### Features
 
-* Built-in rules, and support for writing custom rules
+* Built-in rules, and support for writing custom rules (coming soon)
 * Information and guidance provided for identified security issues
 * Broad language support including: C, C++, C#, Cobol, Go, Java, Javascript/Typescript, Python, and [more](https://github.com/Microsoft/DevSkim/wiki/Supported-Languages).
 
