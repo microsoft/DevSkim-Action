@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 # $1 is the directory or file to scan
 # $2 is if we should crawl archives
 # $3 is the output filename
