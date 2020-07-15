@@ -10,9 +10,13 @@ inputs:
     required: false
     default: false
   output-filename:
-    description: 'The filename for the output in the repository root.'
+    description: 'The filename for the output.'
     required: false
     default: "devskim-results.sarif"
+  output-directory:
+    description: 'The directory for the output.'
+    required: false
+    default: "GITHUB_WORKSPACE"
 outputs:
 branding:
   icon: 'check-square'  
@@ -24,3 +28,4 @@ runs:
     - ${{ inputs.directory-to-scan }}
     - ${{ inputs.should-scan-archives }}
     - ${{ inputs.output-filename }}
+    - ${{ inputs.output-directory }}

@@ -1,15 +1,23 @@
-# $1 is the directory to scan
+#!/bin/sh
+# $1 is the directory or file to scan
 # $2 is if we should crawl archives
 # $3 is the output filename
+# $4 is the output directory
 
 if [ "$1" = "GITHUB_WORKSPACE" ]; then
-    Directory=$GITHUB_WORKSPACE
+    ScanTarget=$GITHUB_WORKSPACE
 else
-    Directory=$1
+    ScanTarget=$1
+fi
+
+if [ "$4" = "GITHUB_WORKSPACE" ]; then
+    OutputDirectory=$GITHUB_WORKSPACE
+else
+    OutputDirectory=$4
 fi
 
 if [ "$2" = "true" ]; then
-    devskim analyze $Directory -f sarif -c > $GITHUB_WORKSPACE/$3
+    /tools/devskim analyze $ScanTarget -f sarif -c > $OutputDirectory/$3
 else
-    devskim analyze $Directory -f sarif > $GITHUB_WORKSPACE/$3
+    /tools/devskim analyze $ScanTarget -f sarif > $OutputDirectory/$3
 fi
