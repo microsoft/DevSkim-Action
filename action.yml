@@ -2,7 +2,7 @@ name: 'DevSkim'
 description: 'Run DevSkim Code Analysis'
 inputs:
   directory-to-scan:
-    description: 'The directory to scan. Repository root used by default.'
+    description: 'The sub directory of the repository root to scan. Repository root used by default.'
     required: false
     default: 'GITHUB_WORKSPACE'
   should-scan-archives:

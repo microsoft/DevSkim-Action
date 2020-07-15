@@ -8,7 +8,7 @@
 if [ "$1" = "GITHUB_WORKSPACE" ]; then
     ScanTarget=$GITHUB_WORKSPACE
 else
-    ScanTarget=$1
+    ScanTarget=$GITHUB_WORKSPACE/$1
 fi
 
 if [ "$4" = "GITHUB_WORKSPACE" ]; then
