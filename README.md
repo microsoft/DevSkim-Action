@@ -8,7 +8,7 @@ Add DevSkim to your GitHub Actions pipeline like below.
 
 ```
     - uses: actions/checkout@v2
-    - uses: microsoft/DevSkim-Action
+    - uses: microsoft/DevSkim-Action@1
     - uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: devskim-results.sarif
@@ -22,6 +22,7 @@ You can also specify a number of options to the action.
         directory-to-scan: path/to/scan
         should-scan-archives: false
         output-filename: devskim-results.sarif
+        output-directory: path/to/output (appended to $GITHUB_WORKSPACE)
 ```
 
 ### Features
