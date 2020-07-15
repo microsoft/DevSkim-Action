@@ -14,6 +14,9 @@ inputs:
     required: false
     default: "devskim-results.sarif"
 outputs:
+branding:
+  icon: 'check-square'  
+  color: 'green'  
 runs:
   using: 'docker'
   image: 'Dockerfile'
