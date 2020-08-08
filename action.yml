@@ -4,7 +4,7 @@ inputs:
   directory-to-scan:
     description: 'The sub directory of the repository root to scan. Repository root used by default.'
     required: false
-    default: '$GITHUB_WORKSPACE'
+    default: ''
   should-scan-archives:
     description: 'Optionally scan the contents of archives.'
     required: false
@@ -13,10 +13,6 @@ inputs:
     description: 'The filename for the output.'
     required: false
     default: "devskim-results.sarif"
-  output-directory:
-    description: 'The sub directory for the output under GITHUB_WORKSPACE.'
-    required: false
-    default: "$GITHUB_WORKSPACE"
 branding:
   icon: 'check-square'  
   color: 'green'  
