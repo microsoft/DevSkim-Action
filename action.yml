@@ -1,5 +1,5 @@
 name: 'DevSkim'
-description: 'Run DevSkim Code Analysis'
+description: 'Run DevSkim Code Analysis and output Sarif compatible with GitHub Code Scanning alerts'
 inputs:
   directory-to-scan:
     description: 'The sub directory of the repository root to scan. Repository root used by default.'
@@ -17,6 +17,10 @@ inputs:
     description: 'The sub directory for the output under GITHUB_WORKSPACE.'
     required: false
     default: 'GITHUB_WORKSPACE'
+  ignore-globs:
+    description: 'Optional comma separated list of file globs to ignore when scanning.'
+    required: false
+    default: "**/.git/**,**/bin/**"
 branding:
   icon: 'check-square'  
   color: 'green'  
@@ -28,3 +32,4 @@ runs:
     - ${{ inputs.should-scan-archives }}
     - ${{ inputs.output-filename }}
     - ${{ inputs.output-directory }}
+    - ${{ inputs.ignore-globs }}

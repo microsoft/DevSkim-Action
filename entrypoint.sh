@@ -4,6 +4,7 @@
 # $2 is if we should crawl archives
 # $3 is the output filename
 # $4 is the output directory
+# $5 is the file globs to ignore
 
 if [ "$1" = "GITHUB_WORKSPACE" ]; then
     ScanTarget=$GITHUB_WORKSPACE
@@ -21,4 +22,4 @@ if [ "$2" = "true" ]; then
     Opts = "-c"
 fi
 
-/tools/devskim analyze "$ScanTarget" "$OutputDirectory/$3" -f sarif $Opts
+/tools/devskim analyze "$ScanTarget" "$OutputDirectory/$3" -f sarif $Opts -g $5
