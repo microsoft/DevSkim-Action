@@ -25,7 +25,7 @@ You can also specify a number of options to the action.
         should-scan-archives: false
         output-filename: devskim-results.sarif
         output-directory: path/to/output (appended to $GITHUB_WORKSPACE)
-        ignore-globs: **/.git/**,*.txt
+        ignore-globs: "**/.git/**,*.txt"
 ```
 
 ## Features
