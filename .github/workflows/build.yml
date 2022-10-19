@@ -36,7 +36,10 @@ jobs:
       uses: ./
 
     - name: Check file exists
-      run: cat ${{ github.workspace }}/devskim-results.sarif
+      run: |
+        cat ${{ github.workspace }}/devskim-results.sarif
+
+        pwsh -c "Get-Content '${{ github.workspace }}/devskim-results.sarif' | Set-Content '${{ github.workspace }}/devskim-results.sarif' -Encoding UTF8"
 
     # Make sure results exist and can by uploaded
     - name: Upload results
