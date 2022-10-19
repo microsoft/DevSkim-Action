@@ -39,10 +39,10 @@ jobs:
       run: |
         cat ${{ github.workspace }}/devskim-results.sarif
 
-        pwsh -c "Get-Content '${{ github.workspace }}/devskim-results.sarif' | Set-Content '${{ github.workspace }}/devskim-results.sarif' -Encoding UTF8"
+        pwsh -c "Get-Content '${{ github.workspace }}/devskim-results.sarif' | Set-Content '${{ github.workspace }}/devskim-results2.sarif' -Encoding UTF8"
 
     # Make sure results exist and can by uploaded
     - name: Upload results
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: ${{ github.workspace }}/devskim-results.sarif
+        sarif_file: ${{ github.workspace }}/devskim-results2.sarif
