@@ -23,6 +23,7 @@ if [ "$2" = "true" ]; then
 fi
 
 echo "Scanning $ScanTarget"
+echo "Outputting to $OutputDirectory/$3"
 
 /tools/devskim --version
 
