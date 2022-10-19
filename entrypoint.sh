@@ -22,4 +22,6 @@ if [ "$2" = "true" ]; then
     Opts = "-c"
 fi
 
+echo "Scanning $ScanTarget"
+
 /tools/devskim analyze "$ScanTarget" "$OutputDirectory/$3" -f sarif $Opts -g $5 --base-path $GITHUB_WORKSPACE
