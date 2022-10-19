@@ -18,11 +18,16 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: read
+
+      # Allow upload of events into GitHub Security tab
+      security-events: write
     steps:
 
     - uses: actions/checkout@v3
 
+    # Check that dockerfile can be built
     - name: Build action image
       run: docker build . --file Dockerfile
 
