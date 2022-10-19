@@ -35,6 +35,9 @@ jobs:
     - name: Self test action
       uses: ./
 
+    - name: Check file exists
+      run: cat ${{ github.workspace }}/devskim-results.sarif
+
     # Make sure results exist and can by uploaded
     - name: Upload results
       uses: github/codeql-action/upload-sarif@v2
