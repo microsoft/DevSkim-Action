@@ -28,7 +28,7 @@ jobs:
 
     # Can the action run successful against the repo
     - name: Self test action
-      uses: ./
+      uses: ./ GITHUB_WORKSPACE false devskim-results.sarif GITHUB_WORKSPACE **/bin/**,**/obj/**
 
     # Make sure results exist and can by uploaded
     - name: Upload results
