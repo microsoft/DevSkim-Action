@@ -1,0 +1,37 @@
+#
+# Test build action
+#
+
+name: Build and test
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+  workflow_dispatch:
+
+jobs:
+
+  # Check that container image can be built
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Build action image
+      run: docker build . --file Dockerfile --tag DevSkim-Action:${{ github.sha }}
+
+    # Can the action run successful against the repo
+    - name: Self test action
+      uses: ./
+
+    # Make sure results exist and can by uploaded
+    - name: Upload results
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: devskim-results.sarif
