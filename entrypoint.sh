@@ -24,4 +24,6 @@ fi
 
 echo "Scanning $ScanTarget"
 
+/tools/devskim --version
+
 /tools/devskim analyze "$ScanTarget" "$OutputDirectory/$3" -f sarif $Opts -g $5 --base-path $GITHUB_WORKSPACE
