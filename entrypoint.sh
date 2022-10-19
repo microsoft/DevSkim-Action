@@ -22,12 +22,6 @@ if [ "$2" = "true" ]; then
     Opts = "-c"
 fi
 
-echo "Scanning $ScanTarget"
-echo "Outputting to $OutputDirectory/$3"
-
 /tools/devskim --version
 
 /tools/devskim analyze "$ScanTarget" "$OutputDirectory/$3" -f sarif $Opts -g $5 --base-path $GITHUB_WORKSPACE
-
-echo "Test JSON"
-cat $OutputDirectory/$3
