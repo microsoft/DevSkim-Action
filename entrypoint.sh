@@ -24,7 +24,7 @@ fi
 
 /tools/devskim --version
 
-devSkimVersion = $(/tools/devskim --version | tail -n 1)
+let devSkimVersion=$(/tools/devskim --version | tail -n 1)
 if [[ $devSkimVersion =~ ^0\.[6-7]\.[0-9][0-9]* ]]; then # Pre 0.8
     /tools/devskim analyze "$ScanTarget" "$OutputDirectory/$3" -f sarif $Opts -g $5 --base-path $GITHUB_WORKSPACE
 else # Post 0.8 
