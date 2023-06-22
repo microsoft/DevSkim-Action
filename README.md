@@ -9,9 +9,9 @@ The DevSkim GitHub Action outputs a sarif file compatible with GitHub's Security
 Add DevSkim to your GitHub Actions pipeline like below.
 
 ```
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: microsoft/DevSkim-Action@v1
-    - uses: github/codeql-action/upload-sarif@v1
+    - uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: devskim-results.sarif
 ```
@@ -33,7 +33,7 @@ You can also specify a number of options to the action.
 * Built-in ruleset highlighting common security issues in source code
 * Support for scanning code contained in archives
 * Information and guidance provided for identified security issues
-* Broad language support including: C, C++, C#, Cobol, Go, Java, Javascript/Typescript, Python, and [more](https://github.com/Microsoft/DevSkim/wiki/Supported-Languages).
+* Broad language support including: C, C++, C#, Cobol, Go, Java, Javascript/Typescript, Python, and [more](https://github.com/Microsoft/DevSkim/wiki/#supported-languages).
 
 ## Main Project
 
