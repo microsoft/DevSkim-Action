@@ -22,4 +22,4 @@ if [ "$2" = "true" ]; then
     Opts = "-c"
 fi
 
-/tools/devskim analyze --source-code "$ScanTarget" --output-file "$OutputDirectory/$3" $Opts --ignore-globs $5 --base-path $GITHUB_WORKSPACE
+/tools/devskim analyze --source-code "$ScanTarget" --output-file "$OutputDirectory/$3" $Opts --ignore-globs $5 --base-path $GITHUB_WORKSPACE --ignore-rule-ids $6
