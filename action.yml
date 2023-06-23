@@ -21,6 +21,10 @@ inputs:
     description: 'Optional comma separated list of file globs to ignore when scanning.'
     required: false
     default: "**/.git/**,**/bin/**"
+  exclude-rules:
+    description: 'Optional comma separated list of rule IDs to ignore'
+    required: false
+    default: ""
 branding:
   icon: 'check-square'  
   color: 'green'  
@@ -33,3 +37,4 @@ runs:
     - ${{ inputs.output-filename }}
     - ${{ inputs.output-directory }}
     - ${{ inputs.ignore-globs }}
+    - ${{ inputs.exclude-rules }}
