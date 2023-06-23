@@ -5,6 +5,7 @@
 # $3 is the output filename
 # $4 is the output directory
 # $5 is the file globs to ignore
+# $6 is the ruleids to exclude
 
 if [ "$1" = "GITHUB_WORKSPACE" ]; then
     ScanTarget=$GITHUB_WORKSPACE
