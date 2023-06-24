@@ -35,7 +35,7 @@ jobs:
     - name: Self test action
       uses: ./
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.0
+      uses: actions/upload-artifact@v3.1.2
       with:
         # Artifact name
         name: devskim-results.sarif # optional, default is artifact
