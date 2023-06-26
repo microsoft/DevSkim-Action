@@ -5,6 +5,7 @@
 # $3 is the output filename
 # $4 is the output directory
 # $5 is the file globs to ignore
+# $6 is the ruleids to exclude
 
 if [ "$1" = "GITHUB_WORKSPACE" ]; then
     ScanTarget=$GITHUB_WORKSPACE
@@ -22,4 +23,10 @@ if [ "$2" = "true" ]; then
     Opts = "-c"
 fi
 
-/tools/devskim analyze --source-code "$ScanTarget" --output-file "$OutputDirectory/$3" $Opts --ignore-globs $5 --base-path $GITHUB_WORKSPACE
+if [ -z "$6" ]; then
+    Idopts=""
+else
+    Idopts="--ignore-rule-ids $6"
+fi
+
+/tools/devskim analyze --source-code "$ScanTarget" --output-file "$OutputDirectory/$3" $Opts --ignore-globs $5 $Idopts
