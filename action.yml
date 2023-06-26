@@ -29,6 +29,10 @@ inputs:
     description: 'Optional path in the repository containing a json to provide to the --options-json argument'
     required: false
     default: ""
+  extra-options:
+    description: 'Provide any other command line arguments for the DevSkim analyze command. See DevSkim documentation for usage instructions.'
+    required: false
+    default: ""
 branding:
   icon: 'check-square'  
   color: 'green'  
@@ -42,3 +46,5 @@ runs:
     - ${{ inputs.output-directory }}
     - ${{ inputs.ignore-globs }}
     - ${{ inputs.exclude-rules }}
+    - ${{ inputs.options-json }}
+    - ${{ inputs.extra-options }}

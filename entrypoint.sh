@@ -7,6 +7,7 @@
 # $5 is the file globs to ignore
 # $6 is the ruleids to exclude
 # $7 is the path to a json file for the --options-json argument
+# $8 is any additional options
 
 if [ "$1" = "GITHUB_WORKSPACE" ]; then
     ScanTarget=$GITHUB_WORKSPACE
@@ -36,4 +37,4 @@ else
     Idopts="--ignore-rule-ids $6"
 fi
 
-/tools/devskim analyze --source-code "$ScanTarget" --output-file "$OutputDirectory/$3" $Opts --ignore-globs $5 $Idopts
+/tools/devskim analyze --source-code "$ScanTarget" --output-file "$OutputDirectory/$3" $8 $Opts --ignore-globs $5 $Idopts $OptionsJsonArg

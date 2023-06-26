@@ -28,6 +28,7 @@ You can also specify a number of options to the action.
         ignore-globs: "**/.git/**,*.txt"
         exclude-rules: DS176209,DS148264
         options-json: path/to/options.json
+        extra-options: --args --to --devskimAnalyze
 ```
 
 ## Features
