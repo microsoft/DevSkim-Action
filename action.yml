@@ -25,6 +25,10 @@ inputs:
     description: 'Optional comma separated list of rule IDs to ignore'
     required: false
     default: ""
+  options-json:
+    description: 'Optional path in the repository containing a json to provide to the --options-json argument'
+    required: false
+    default: ""
 branding:
   icon: 'check-square'  
   color: 'green'  

@@ -6,6 +6,7 @@
 # $4 is the output directory
 # $5 is the file globs to ignore
 # $6 is the ruleids to exclude
+# $7 is the path to a json file for the --options-json argument
 
 if [ "$1" = "GITHUB_WORKSPACE" ]; then
     ScanTarget=$GITHUB_WORKSPACE
@@ -17,6 +18,12 @@ if [ "$4" = "GITHUB_WORKSPACE" ]; then
     OutputDirectory=$GITHUB_WORKSPACE
 else
     OutputDirectory=$GITHUB_WORKSPACE/$4
+fi
+
+if [ -z "$7"]; then
+    OptionsJsonArg=""
+else
+    OptionsJsonArg="--options-json $GITHUB_WORKSPACE/$7"
 fi
 
 if [ "$2" = "true" ]; then
