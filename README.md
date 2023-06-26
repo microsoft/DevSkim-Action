@@ -31,7 +31,7 @@ You can also specify a number of options to the action.
         extra-options: --args --to --devskimAnalyze
 ```
 ## Arguments
-The arguments specified are provided to the [DevSkim CLI's Analyze command](https://github.com/microsoft/DevSkim/wiki/Analyze-Command).
+The arguments specified are provided to the DevSkim CLI's Analyze command. See the [DevSkim Wiki](https://github.com/microsoft/DevSkim/wiki/Analyze-Command) for detailed usage instruction.
 
 ### directory-to-scan
 Relative path in `$GITHUB_WORKSPACE` for DevSkim to Scan. Equivalent to the `--source-code` argument to Analyze.
@@ -55,7 +55,7 @@ Comma separated list of Rule IDs to skip during analysis.  Equivalent to the `--
 Relative path in `$GITHUB_WORKSPACE` to a json serialiation of a SerializedAnalyzeCommandOptions object. Equivalent to the `--options-json` argument to Analyze.
 
 ### extra-options
-Use this field to specify any other arguments to the DevSkim Analyze command. See the [DevSkim Wiki](https://github.com/microsoft/DevSkim/wiki/Analyze-Command) for usage documentation.
+Use this field to specify any other arguments to the DevSkim Analyze command. See the [DevSkim Wiki](https://github.com/microsoft/DevSkim/wiki/Analyze-Command) for available options and usage documentation.
 
 ## Features
 
