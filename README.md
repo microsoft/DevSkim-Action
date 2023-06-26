@@ -30,6 +30,32 @@ You can also specify a number of options to the action.
         options-json: path/to/options.json
         extra-options: --args --to --devskimAnalyze
 ```
+## Arguments
+The arguments specified are provided to the [DevSkim CLI's Analyze command](https://github.com/microsoft/DevSkim/wiki/Analyze-Command).
+
+### directory-to-scan
+Relative path in `$GITHUB_WORKSPACE` for DevSkim to Scan. Equivalent to the `--source-code` argument to Analyze.
+
+### should-scan-archives
+DevSkim can peek into archives to scan the files contained inside them. Setting this to true will enable that behavior. Equivalent to the `--crawl-archives` argument to Analyze.
+
+### output-filename
+The filename to use for the results of the Analyze scan. Along with `output-directory` equivalent to the `--output-file` argument to Analyze.
+
+### output-directory
+Relative path to a directory in `$GITHUB_WORKSPACE` to emit the output file, default to output in the root of `$GITHUB_WORKSPACE` with the specified `output-filename`.
+
+### ignore-globs
+Files which match any of these globs will be skipped during analysis. Equivalent to the `--ignore-globs` argument to Analyze.
+
+### exclude-rules
+Comma separated list of Rule IDs to skip during analysis.  Equivalent to the `--ignore-rule-ids` argument to Analyze.
+
+### options-json
+Relative path in `$GITHUB_WORKSPACE` to a json serialiation of a SerializedAnalyzeCommandOptions object. Equivalent to the `--options-json` argument to Analyze.
+
+### extra-options
+Use this field to specify any other arguments to the DevSkim Analyze command. See the [DevSkim Wiki](https://github.com/microsoft/DevSkim/wiki/Analyze-Command) for usage documentation.
 
 ## Features
 
