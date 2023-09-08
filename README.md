@@ -9,7 +9,7 @@ The DevSkim GitHub Action outputs a sarif file compatible with GitHub's Security
 Add DevSkim to your GitHub Actions pipeline like below.
 
 ```
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: microsoft/DevSkim-Action@v1
     - uses: github/codeql-action/upload-sarif@v2
       with:

@@ -25,7 +25,7 @@ jobs:
       security-events: write
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     # Check that dockerfile can be built
     - name: Build action image
@@ -35,7 +35,7 @@ jobs:
     - name: Self test action
       uses: ./
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3
       with:
         # Artifact name
         name: devskim-results.sarif # optional, default is artifact
