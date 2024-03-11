@@ -37,4 +37,13 @@ else
     Idopts="--ignore-rule-ids $6"
 fi
 
+echo $1
+echo $2
+echo $3
+echo $4
+echo $5
+echo $6
+echo $7
+echo $8
+
 /tools/devskim analyze --source-code "$ScanTarget" --output-file "$OutputDirectory/$3" $8 $Opts --ignore-globs $5 $Idopts $OptionsJsonArg

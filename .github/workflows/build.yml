@@ -6,7 +6,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: [ 'main', 'gfs/TestGlobs' ]
   pull_request:
     branches: [ 'main' ]
   workflow_dispatch:
@@ -34,6 +34,8 @@ jobs:
     # Can the action run successful against the repo
     - name: Self test action
       uses: ./
+      with:
+        ignore-globs: '**/one/*.cs'
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3
       with:
