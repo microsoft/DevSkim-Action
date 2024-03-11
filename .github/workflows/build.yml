@@ -35,7 +35,8 @@ jobs:
     - name: Self test action
       uses: ./
       with:
-        ignore-globs: "**/one/*.cs"
+        ignore-globs: |
+          **/one/*.cs
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3
       with:
