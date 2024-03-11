@@ -6,7 +6,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ 'main', 'gfs/TestGlobs' ]
+    branches: [ 'main' ]
   pull_request:
     branches: [ 'main' ]
   workflow_dispatch:
