@@ -37,4 +37,7 @@ else
     Idopts="--ignore-rule-ids $6"
 fi
 
+# Prevent glob expansion, fix ignore-globs parsing
+set -o noglob
+
 /tools/devskim analyze --source-code "$ScanTarget" --output-file "$OutputDirectory/$3" $8 $Opts --ignore-globs $5 $Idopts $OptionsJsonArg
