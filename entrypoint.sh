@@ -21,7 +21,7 @@ else
     OutputDirectory=$GITHUB_WORKSPACE/$4
 fi
 
-if [ -z "$7"]; then
+if [ -z "$7" ]; then
     OptionsJsonArg=""
 else
     OptionsJsonArg="--options-json $GITHUB_WORKSPACE/$7"
