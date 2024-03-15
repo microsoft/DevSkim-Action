@@ -35,7 +35,7 @@ jobs:
     - name: Self test action
       uses: ./
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         # Artifact name
         name: devskim-results.sarif # optional, default is artifact
@@ -52,6 +52,6 @@ jobs:
         command: validate devskim-results.sarif # optional, default is version
     # Make sure results exist and can by uploaded
     - name: Upload results
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: devskim-results.sarif
