@@ -11,7 +11,7 @@ Add DevSkim to your GitHub Actions pipeline like below.
 ```
     - uses: actions/checkout@v4
     - uses: microsoft/DevSkim-Action@v1
-    - uses: github/codeql-action/upload-sarif@v2
+    - uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: devskim-results.sarif
 ```
