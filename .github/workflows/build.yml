@@ -11,6 +11,8 @@ on:
     branches: [ 'main' ]
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
 
   # Check that container image can be built

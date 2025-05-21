@@ -28,7 +28,7 @@ else
 fi
 
 if [ "$2" = "true" ]; then
-    Opts = "-c"
+    Opts="-c"
 fi
 
 if [ -z "$6" ]; then
