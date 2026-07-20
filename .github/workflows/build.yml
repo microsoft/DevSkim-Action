@@ -48,7 +48,7 @@ jobs:
         # Duration after which artifact will expire in days. 0 means using default retention.
         retention-days: 1 # optional
     - name: SARIF Multitool
-      uses: microsoft/sarif-actions@v0.1
+      uses: microsoft/sarif-actions@v0.2
       with:
         # Command to be sent to SARIF Multitool
         command: validate devskim-results.sarif # optional, default is version
