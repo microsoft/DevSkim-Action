@@ -49,6 +49,8 @@ assert_failure() {
 DOTNET_CALL_COUNT_FILE="$(mktemp)"
 echo 0 > "$DOTNET_CALL_COUNT_FILE"
 DOTNET_SHOULD_FAIL=0
+# Records the single argument the mock received for `--version`.
+DOTNET_VERSION_ARG_FILE="$(mktemp)"
 
 dotnet() {
     local count
@@ -66,6 +68,8 @@ dotnet() {
     for i in "${!args[@]}"; do
         if [ "${args[$i]}" = "--tool-path" ]; then
             tool_path="${args[$((i + 1))]}"
+        elif [ "${args[$i]}" = "--version" ]; then
+            printf '%s' "${args[$((i + 1))]}" > "$DOTNET_VERSION_ARG_FILE"
         fi
     done
     if [ -n "$tool_path" ]; then
@@ -150,27 +154,26 @@ else
     fail "repeated override installs use fresh unpredictable directories (first '$out', second '$out2', calls $(dotnet_call_count))"
 fi
 
-# 4. Unusable input (shell metacharacters) is passed through to NuGet as a
-# single argument; NuGet rejects it and the failure propagates rather than
-# the value being interpreted by the shell.
+# 4. Input containing shell metacharacters reaches NuGet as one literal
+# argument and is never interpreted by the shell. Whether such a value is
+# acceptable is NuGet's decision, not this script's.
 setup_fixture
 echo 0 > "$DOTNET_CALL_COUNT_FILE"
-DOTNET_SHOULD_FAIL=1
-if out="$(resolve_devskim_binary "1.0.90; rm -rf /tmp/should-not-run")"; then
-    fail "unusable version input fails without being interpreted by the shell (unexpectedly succeeded: '$out')"
-elif [ -e /tmp/should-not-run ] || [ "$(dotnet_call_count)" -ne 1 ]; then
-    fail "unusable version input fails without being interpreted by the shell (calls $(dotnet_call_count))"
-else
-    pass "unusable version input fails without being interpreted by the shell"
-fi
 DOTNET_SHOULD_FAIL=0
+malicious_version='1.0.90; rm -rf /tmp/should-not-run$(whoami)`whoami`'
+resolve_devskim_binary "$malicious_version" >/dev/null 2>&1
+if [ "$(cat "$DOTNET_VERSION_ARG_FILE")" = "$malicious_version" ] && [ ! -e /tmp/should-not-run ]; then
+    pass "version input reaches dotnet as a single literal argument, unexpanded by the shell"
+else
+    fail "version input reaches dotnet as a single literal argument, unexpanded by the shell (got '$(cat "$DOTNET_VERSION_ARG_FILE")')"
+fi
 
 # 5. Prerelease versions with hyphenated identifiers are handed to NuGet unchanged.
 setup_fixture
 echo 0 > "$DOTNET_CALL_COUNT_FILE"
 DOTNET_SHOULD_FAIL=0
 out="$(resolve_devskim_binary "1.2.3-nightly-build")"
-if [[ "$out" == "${OVERRIDE_BASE_DIR}"/devskim-override-*/devskim ]] && [ "$(dotnet_call_count)" -eq 1 ]; then
+if [[ "$out" == "${OVERRIDE_BASE_DIR}"/devskim-override-*/devskim ]] && [ "$(dotnet_call_count)" -eq 1 ] && [ "$(cat "$DOTNET_VERSION_ARG_FILE")" = "1.2.3-nightly-build" ]; then
     pass "hyphenated prerelease version is passed through to NuGet"
 else
     fail "hyphenated prerelease version is passed through to NuGet (got '$out', calls $(dotnet_call_count))"
