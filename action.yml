@@ -33,6 +33,10 @@ inputs:
     description: 'Provide any other command line arguments for the DevSkim analyze command. See DevSkim documentation for usage instructions.'
     required: false
     default: ""
+  devskim-version:
+    description: 'Optional exact Microsoft.CST.DevSkim.Cli NuGet package version (e.g. 1.0.90) to use instead of the version bundled with this action. Must be an exact, published, stable or prerelease version; ranges, wildcards, "latest", and other non-exact values are rejected. Leave empty (default) to use the tested version bundled with the action with no runtime network install.'
+    required: false
+    default: ""
 branding:
   icon: 'check-square'  
   color: 'green'  
@@ -48,3 +52,4 @@ runs:
     - ${{ inputs.exclude-rules }}
     - ${{ inputs.options-json }}
     - ${{ inputs.extra-options }}
+    - ${{ inputs.devskim-version }}

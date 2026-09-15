@@ -8,9 +8,13 @@ The DevSkim GitHub Action outputs a sarif file compatible with GitHub's Security
 
 Add DevSkim to your GitHub Actions pipeline like below.
 
+Pin to a specific released version tag rather than a moving major/minor alias like `@v1`; this action no longer updates a floating `v1` tag. For the strongest supply-chain guarantee, pin to the full commit SHA of a release instead of a tag (see [Versioning and releases](#versioning-and-releases) below).
+
+> **Note:** `v2.0.0` below is the version this README documents. Until it is published, use the [latest available release tag](https://github.com/microsoft/DevSkim-Action/releases) instead.
+
 ```
     - uses: actions/checkout@v4
-    - uses: microsoft/DevSkim-Action@v1
+    - uses: microsoft/DevSkim-Action@v2.0.0
     - uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: devskim-results.sarif
@@ -19,7 +23,7 @@ Add DevSkim to your GitHub Actions pipeline like below.
 You can also specify a number of options to the action.
 
 ```
-    - uses: microsoft/devskim-action@v1
+    - uses: microsoft/DevSkim-Action@v2.0.0
       with:
         directory-to-scan: path/to/scan
         should-scan-archives: false
@@ -29,6 +33,7 @@ You can also specify a number of options to the action.
         exclude-rules: DS176209,DS148264
         options-json: path/to/options.json
         extra-options: --args --to --devskimAnalyze
+        devskim-version: 1.0.90
 ```
 ## Arguments
 The arguments specified are provided to the DevSkim CLI's Analyze command. See the [DevSkim Wiki](https://github.com/microsoft/DevSkim/wiki/Analyze-Command) for detailed usage instruction.
@@ -56,6 +61,31 @@ Relative path in `$GITHUB_WORKSPACE` to a json serialiation of a SerializedAnaly
 
 ### extra-options
 Use this field to specify any other arguments to the DevSkim Analyze command. See the [DevSkim Wiki](https://github.com/microsoft/DevSkim/wiki/Analyze-Command) for available options and usage documentation.
+
+### devskim-version
+Optional. An exact, published `Microsoft.CST.DevSkim.Cli` NuGet package version, for example `1.0.90` or a prerelease such as `1.0.91-beta.1`. Version ranges, wildcards (`1.0.*`), floating aliases (`latest`), and any other non-exact value are rejected and cause the action to fail before scanning, rather than silently falling back to a default. Leave this empty (the default) to use the version bundled with the action, which requires no runtime network install. If you set `devskim-version` to a value different from the bundled version, the action downloads that exact CLI version from the official [nuget.org](https://www.nuget.org/packages/Microsoft.CST.DevSkim.Cli) feed into an isolated directory at container start; **you are responsible for confirming that the version you choose is compatible with your ruleset and CLI options**, since it is not the version this action was tested against.
+
+## DevSkim CLI version pinning
+
+Earlier versions of this action installed the DevSkim CLI without pinning a version, so upstream `Microsoft.CST.DevSkim.Cli` releases could change scan behavior for everyone using this action without a corresponding action release. Starting with this release, the action's container image bundles one exact, tested `Microsoft.CST.DevSkim.Cli` version by default (currently `1.0.90`), pinned in the `Dockerfile`. Upstream DevSkim CLI publications never implicitly change the version this action runs; a new CLI version is only picked up when a maintainer bumps the pin and cuts a new action release.
+
+Use the [`devskim-version`](#devskim-version) input if you need a different exact CLI version than the one currently bundled. Note that pinning the CLI version does not, by itself, make the container build fully reproducible: the base .NET SDK image and its own dependencies can still change over time independently of this pin.
+
+### For maintainers: bumping the pin and releasing
+
+1. Pick the new exact `Microsoft.CST.DevSkim.Cli` version from the [official NuGet listing](https://www.nuget.org/packages/Microsoft.CST.DevSkim.CLI).
+2. Update the `DEVSKIM_CLI_VERSION` build argument default in `Dockerfile` and verify the image builds and `docker run`/`tests/entrypoint_test.sh` still pass, including a scan against representative test files, to confirm compatibility with the .NET runtime and the CLI arguments this action passes.
+3. Bump the `VERSION` file to the next action release version (a new minor/patch for additive changes, or a new major for breaking changes) and merge the reviewed change to `main`.
+4. Once the build/test job succeeds on `main`, the release workflow automatically creates a `vX.Y.Z` tag and GitHub release for that exact tested commit. It never moves an existing tag; if `VERSION` isn't bumped, or already matches the current tag for that commit, no new tag or release is created.
+
+## Versioning and releases
+
+This action is versioned with full `vMAJOR.MINOR.PATCH` release tags (see the repository's [Releases](https://github.com/microsoft/DevSkim-Action/releases) page for what has actually been published). Prefer pinning to:
+
+* A full release tag, e.g. `microsoft/DevSkim-Action@v2.0.0`, or
+* A full commit SHA, e.g. `microsoft/DevSkim-Action@<40-character-sha>`, for the strongest guarantee that the action's behavior cannot change without you explicitly updating the reference.
+
+This action no longer recommends or maintains a moving `@v1` alias tag. Release tags are created once, for a specific tested commit, and are not force-moved afterward. The repository maintainers may additionally enable GitHub's [immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases) setting, which is a repository setting outside the scope of this action's workflow changes; not force-moving tags in automation is a best-effort practice, not a substitute for that platform-enforced protection. See GitHub's guide on [using immutable releases and tags to manage your actions releases](https://docs.github.com/en/actions/how-tos/create-and-publish-actions/using-immutable-releases-and-tags-to-manage-your-actions-releases) for details.
 
 ## Features
 
