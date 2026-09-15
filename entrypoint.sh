@@ -10,6 +10,12 @@
 # $8 is any additional options
 # $9 is an optional exact Microsoft.CST.DevSkim.Cli NuGet version to use
 #    instead of the version bundled with this action image.
+#
+# NOTE: These are positional to preserve compatibility with the existing
+# action.yml `args:` list (kept intentionally minimal/unchanged for this
+# release). $9 was appended, not inserted, so existing positions 1-8 are
+# unaffected. If action.yml's args list is ever reordered, this file's
+# positional reads must be updated to match.
 
 set -euo pipefail
 
@@ -65,13 +71,20 @@ resolve_devskim_binary() {
         return 0
     fi
 
-    local override_dir="${OVERRIDE_BASE_DIR}/devskim-override-${requested_version}"
-    if [ ! -x "${override_dir}/devskim" ]; then
-        echo "Installing DevSkim CLI ${requested_version} from nuget.org into an isolated tool directory..." >&2
-        if ! dotnet tool install --tool-path "$override_dir" --version "$requested_version" --configfile "$TRUSTED_NUGET_CONFIG" Microsoft.CST.DevSkim.Cli >&2; then
-            echo "::error::Failed to install requested devskim-version '${requested_version}'. Confirm the version exists on nuget.org and is compatible with the .NET runtime used by this action." >&2
-            return 1
-        fi
+    local override_dir
+    # Use mktemp to create a fresh, unpredictable, mode-0700 directory rather
+    # than a fixed path derived from the version string, so a pre-created
+    # symlink or file at a predictable shared /tmp path cannot be used to
+    # tamper with the isolated install destination.
+    if ! override_dir="$(mktemp -d "${OVERRIDE_BASE_DIR%/}/devskim-override-XXXXXXXXXX")"; then
+        echo "::error::Failed to create an isolated tool directory for devskim-version '${requested_version}'." >&2
+        return 1
+    fi
+
+    echo "Installing DevSkim CLI ${requested_version} from nuget.org into an isolated tool directory..." >&2
+    if ! dotnet tool install --tool-path "$override_dir" --version "$requested_version" --configfile "$TRUSTED_NUGET_CONFIG" Microsoft.CST.DevSkim.Cli >&2; then
+        echo "::error::Failed to install requested devskim-version '${requested_version}'. Confirm the version exists on nuget.org and is compatible with the .NET runtime used by this action." >&2
+        return 1
     fi
 
     echo "${override_dir}/devskim"

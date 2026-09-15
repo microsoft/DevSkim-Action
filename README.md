@@ -10,7 +10,7 @@ Add DevSkim to your GitHub Actions pipeline like below.
 
 Pin to a specific released version tag rather than a moving major/minor alias like `@v1`; this action no longer updates a floating `v1` tag. For the strongest supply-chain guarantee, pin to the full commit SHA of a release instead of a tag (see [Versioning and releases](#versioning-and-releases) below).
 
-> **Note:** `v2.0.0` below is the version this README documents. Until it is published, use the [latest available release tag](https://github.com/microsoft/DevSkim-Action/releases) instead.
+> **Note:** `v2.0.0` below is the version this README documents and is not published yet. Until it is released, use the [latest available release tag](https://github.com/microsoft/DevSkim-Action/releases) instead. Maintainers: remove/update this note once `v2.0.0` (or a later version) has actually been published.
 
 ```
     - uses: actions/checkout@v4

@@ -45,6 +45,11 @@ jobs:
     # Exercise the devskim-version override end-to-end against a real,
     # different published DevSkim CLI release to confirm the input is wired
     # through action.yml/entrypoint.sh and that the scan still succeeds.
+    # NOTE: 1.0.70 is only used here as "a different published version than
+    # the pinned default" for wiring/integration coverage. If this exact
+    # version is ever unlisted from nuget.org, update it to another
+    # currently-published Microsoft.CST.DevSkim.Cli version that differs
+    # from DEVSKIM_CLI_VERSION in the Dockerfile.
     - name: Self test action with devskim-version override
       uses: ./
       with:
@@ -112,13 +117,15 @@ jobs:
           const sha = context.sha;
           const { owner, repo } = context.repo;
 
-          let existing;
+          let existing = null;
           try {
             existing = await github.rest.git.getRef({ owner, repo, ref: `tags/${tag}` });
           } catch (error) {
             if (error.status !== 404) {
               throw error;
             }
+            // 404 means the tag does not exist yet; keep `existing` explicitly null.
+            existing = null;
           }
 
           if (existing) {

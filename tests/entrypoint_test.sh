@@ -155,11 +155,19 @@ setup_fixture
 echo 0 > "$DOTNET_CALL_COUNT_FILE"
 DOTNET_SHOULD_FAIL=0
 out="$(resolve_devskim_binary "1.0.70")"
-expected="${OVERRIDE_BASE_DIR}/devskim-override-1.0.70/devskim"
-if [ "$out" = "$expected" ] && [ "$(dotnet_call_count)" -eq 1 ] && [ -x "$out" ]; then
+if [[ "$out" == "${OVERRIDE_BASE_DIR}"/devskim-override-*/devskim ]] && [ "$(dotnet_call_count)" -eq 1 ] && [ -x "$out" ]; then
     pass "valid alternate (downgrade) version installs into isolated directory"
 else
     fail "valid alternate (downgrade) version installs into isolated directory (got '$out', calls $(dotnet_call_count))"
+fi
+
+# 3b. Installing the same alternate version twice creates two distinct
+# unpredictable directories rather than reusing a fixed, guessable path.
+out2="$(resolve_devskim_binary "1.0.70")"
+if [ "$out2" != "$out" ] && [ "$(dotnet_call_count)" -eq 2 ] && [ -x "$out2" ]; then
+    pass "repeated override installs use fresh unpredictable directories"
+else
+    fail "repeated override installs use fresh unpredictable directories (first '$out', second '$out2', calls $(dotnet_call_count))"
 fi
 
 # 4. Rejected malicious/invalid input -> failure, no install invoked.
