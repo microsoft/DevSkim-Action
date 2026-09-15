@@ -27,7 +27,7 @@ jobs:
       security-events: write
     steps:
 
-    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     # Check that dockerfile can be built
     - name: Build action image
@@ -37,7 +37,7 @@ jobs:
     - name: Self test action
       uses: ./
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         # Artifact name
         name: devskim-results.sarif # optional, default is artifact
@@ -48,12 +48,12 @@ jobs:
         # Duration after which artifact will expire in days. 0 means using default retention.
         retention-days: 1 # optional
     - name: SARIF Multitool
-      uses: microsoft/sarif-actions@295f6a736719089a927e84ecac898b44eb44592f # v0.1
+      uses: microsoft/sarif-actions@c8dd8ba66449523fe92a68cbe13aab3c271efe3c # v0.2
       with:
         # Command to be sent to SARIF Multitool
         command: validate devskim-results.sarif # optional, default is version
     # Make sure results exist and can by uploaded
     - name: Upload results
-      uses: github/codeql-action/upload-sarif@42947a340483f03ba47bb1a039b2c519aab3df85 # v3.37.8
+      uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
       with:
         sarif_file: devskim-results.sarif
