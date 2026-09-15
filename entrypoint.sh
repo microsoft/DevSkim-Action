@@ -28,24 +28,12 @@ BAKED_VERSION_FILE="${BAKED_TOOL_DIR}/.devskim-baked-version"
 TRUSTED_NUGET_CONFIG="${DEVSKIM_NUGET_CONFIG:-/nuget.config}"
 OVERRIDE_BASE_DIR="${DEVSKIM_OVERRIDE_BASE_DIR:-/tmp}"
 
-# Allowlist for the devskim-version input: an exact NuGet stable or
-# prerelease version only, e.g. "1.0.90" or "1.0.90-beta.1". This
-# intentionally rejects version ranges ("[1.0.90,2.0.0)"), wildcards
-# ("1.0.*"), floating aliases ("latest"), whitespace, command line options,
-# URLs, and shell metacharacters.
-readonly VERSION_REGEX='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+(\.[0-9A-Za-z]+)*)?$'
-
-# Returns success if $1 is an exact, allowlisted NuGet version string.
-validate_version() {
-    local version="$1"
-    [[ "$version" =~ $VERSION_REGEX ]]
-}
-
 # Prints the path to the devskim binary to use to stdout, given an optional
-# requested version override (may be empty). Fails closed: on any invalid
-# input or install failure it prints nothing to stdout, logs an error, and
-# returns non-zero. Never silently falls back to the bundled default when an
-# override was requested.
+# requested version override (may be empty). The requested value is passed
+# through to `dotnet tool install --version` as a single argument and NuGet
+# decides whether it is acceptable. Fails closed: on install failure it prints
+# nothing to stdout, logs an error, and returns non-zero. Never silently falls
+# back to the bundled default when an override was requested.
 resolve_devskim_binary() {
     local requested_version="$1"
     local baked_version=""
@@ -57,11 +45,6 @@ resolve_devskim_binary() {
     if [ -z "$requested_version" ]; then
         echo "${BAKED_TOOL_DIR}/devskim"
         return 0
-    fi
-
-    if ! validate_version "$requested_version"; then
-        echo "::error::Invalid devskim-version '${requested_version}'. Provide an exact published NuGet version such as 1.0.90 or 1.0.90-beta.1. Version ranges, wildcards, 'latest', and other values are not supported." >&2
-        return 1
     fi
 
     if [ "$requested_version" = "$baked_version" ]; then
@@ -83,7 +66,7 @@ resolve_devskim_binary() {
 
     echo "Installing DevSkim CLI ${requested_version} from nuget.org into an isolated tool directory..." >&2
     if ! dotnet tool install --tool-path "$override_dir" --version "$requested_version" --configfile "$TRUSTED_NUGET_CONFIG" Microsoft.CST.DevSkim.Cli >&2; then
-        echo "::error::Failed to install requested devskim-version '${requested_version}'. Confirm the version exists on nuget.org and is compatible with the .NET runtime used by this action." >&2
+        echo "::error::Failed to install requested devskim-version '${requested_version}'. Provide an exact published NuGet version such as 1.0.90 or 1.0.91-beta.1, and confirm it exists on nuget.org and is compatible with the .NET runtime used by this action." >&2
         return 1
     fi
 
@@ -134,7 +117,7 @@ main() {
 }
 
 # Only run main when executed directly, so this file can be sourced by tests
-# to exercise validate_version and resolve_devskim_binary in isolation.
+# to exercise resolve_devskim_binary in isolation.
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

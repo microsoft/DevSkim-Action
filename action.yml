@@ -34,7 +34,7 @@ inputs:
     required: false
     default: ""
   devskim-version:
-    description: 'Optional exact Microsoft.CST.DevSkim.Cli NuGet package version (e.g. 1.0.90) to use instead of the version bundled with this action. Must be an exact, published, stable or prerelease version; ranges, wildcards, "latest", and other non-exact values are rejected. Leave empty (default) to use the tested version bundled with the action with no runtime network install.'
+    description: 'Optional Microsoft.CST.DevSkim.Cli NuGet package version (e.g. 1.0.90) to use instead of the version bundled with this action. The value is passed to `dotnet tool install --version`, so use an exact published stable or prerelease version; anything NuGet does not accept fails the action. Leave empty (default) to use the tested version bundled with the action with no runtime network install.'
     required: false
     default: ""
 branding:

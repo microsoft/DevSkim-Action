@@ -29,8 +29,8 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    # Run fast, mocked unit tests for the devskim-version validation and
-    # resolution logic in entrypoint.sh (no Docker/network required).
+    # Run fast, mocked unit tests for the devskim-version resolution logic
+    # in entrypoint.sh (no Docker/network required).
     - name: Unit test entrypoint version handling
       run: bash tests/entrypoint_test.sh
 

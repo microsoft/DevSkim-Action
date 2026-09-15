@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# Unit tests for the DevSkim CLI version validation/resolution logic in
-# entrypoint.sh. These tests source entrypoint.sh (which guards its `main`
-# invocation behind a source-vs-exec check) and exercise the
-# validate_version and resolve_devskim_binary functions directly, mocking
-# `dotnet` so no network access or real DevSkim CLI install is required.
+# Unit tests for the DevSkim CLI version resolution logic in entrypoint.sh.
+# These tests source entrypoint.sh (which guards its `main` invocation behind
+# a source-vs-exec check) and exercise the resolve_devskim_binary function
+# directly, mocking `dotnet` so no network access or real DevSkim CLI install
+# is required.
 #
 # Usage: bash tests/entrypoint_test.sh
 
@@ -88,26 +88,6 @@ dotnet_call_count() {
 # shellcheck disable=SC1091
 source "$REPO_ROOT/entrypoint.sh"
 
-echo "=== validate_version: allowlist ==="
-assert_success "accepts exact stable version 1.0.90" validate_version "1.0.90"
-assert_success "accepts exact stable version 1.0.0" validate_version "1.0.0"
-assert_success "accepts prerelease version 1.0.91-beta.1" validate_version "1.0.91-beta.1"
-assert_success "accepts prerelease version 2.0.0-rc1" validate_version "2.0.0-rc1"
-
-assert_failure "rejects empty string" validate_version ""
-assert_failure "rejects 'latest' alias" validate_version "latest"
-assert_failure "rejects wildcard 1.0.*" validate_version "1.0.*"
-assert_failure "rejects version range [1.0.90,2.0.0)" validate_version "[1.0.90,2.0.0)"
-assert_failure "rejects leading 'v' prefix" validate_version "v1.0.90"
-assert_failure "rejects two-part version 1.0" validate_version "1.0"
-assert_failure "rejects value with whitespace" validate_version "1.0.90 1.0.91"
-assert_failure "rejects value with embedded flag" validate_version "1.0.90 --version 1.0.1"
-assert_failure "rejects shell metacharacter semicolon" validate_version "1.0.90; rm -rf /"
-assert_failure "rejects shell metacharacter backtick" validate_version '1.0.90`whoami`'
-assert_failure "rejects shell metacharacter dollar-paren" validate_version '1.0.90$(whoami)'
-assert_failure "rejects URL-like value" validate_version "https://example.com/1.0.90"
-assert_failure "rejects pipe metacharacter" validate_version "1.0.90|cat /etc/passwd"
-
 echo "=== resolve_devskim_binary: behavior ==="
 
 # Isolated fixture directories per scenario to avoid cross-test interference.
@@ -170,32 +150,30 @@ else
     fail "repeated override installs use fresh unpredictable directories (first '$out', second '$out2', calls $(dotnet_call_count))"
 fi
 
-# 4. Rejected malicious/invalid input -> failure, no install invoked.
+# 4. Unusable input (shell metacharacters) is passed through to NuGet as a
+# single argument; NuGet rejects it and the failure propagates rather than
+# the value being interpreted by the shell.
 setup_fixture
 echo 0 > "$DOTNET_CALL_COUNT_FILE"
-DOTNET_SHOULD_FAIL=0
+DOTNET_SHOULD_FAIL=1
 if out="$(resolve_devskim_binary "1.0.90; rm -rf /tmp/should-not-run")"; then
-    fail "malicious version input is rejected without installing (unexpectedly succeeded: '$out')"
+    fail "unusable version input fails without being interpreted by the shell (unexpectedly succeeded: '$out')"
+elif [ -e /tmp/should-not-run ] || [ "$(dotnet_call_count)" -ne 1 ]; then
+    fail "unusable version input fails without being interpreted by the shell (calls $(dotnet_call_count))"
 else
-    if [ "$(dotnet_call_count)" -eq 0 ]; then
-        pass "malicious version input is rejected without installing"
-    else
-        fail "malicious version input is rejected without installing (dotnet was called $(dotnet_call_count) times)"
-    fi
+    pass "unusable version input fails without being interpreted by the shell"
 fi
+DOTNET_SHOULD_FAIL=0
 
-# 5. Version range input -> failure, no install invoked.
+# 5. Prerelease versions with hyphenated identifiers are handed to NuGet unchanged.
 setup_fixture
 echo 0 > "$DOTNET_CALL_COUNT_FILE"
 DOTNET_SHOULD_FAIL=0
-if out="$(resolve_devskim_binary "[1.0.0,2.0.0)")"; then
-    fail "version range input is rejected without installing (unexpectedly succeeded: '$out')"
+out="$(resolve_devskim_binary "1.2.3-nightly-build")"
+if [[ "$out" == "${OVERRIDE_BASE_DIR}"/devskim-override-*/devskim ]] && [ "$(dotnet_call_count)" -eq 1 ]; then
+    pass "hyphenated prerelease version is passed through to NuGet"
 else
-    if [ "$(dotnet_call_count)" -eq 0 ]; then
-        pass "version range input is rejected without installing"
-    else
-        fail "version range input is rejected without installing (dotnet was called $(dotnet_call_count) times)"
-    fi
+    fail "hyphenated prerelease version is passed through to NuGet (got '$out', calls $(dotnet_call_count))"
 fi
 
 # 6. Valid but nonexistent/incompatible version -> install failure propagates, no fallback to baked binary.
