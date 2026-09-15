@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0
 
 # Exact, tested Microsoft.CST.DevSkim.CLI release baked into the image as the
 # default. This is intentionally NOT a floating/latest reference: upstream
