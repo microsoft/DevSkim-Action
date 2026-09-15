@@ -130,23 +130,31 @@ jobs:
 
           if (existing) {
             const existingSha = existing.data.object.sha;
-            if (existingSha === sha) {
-              core.info(`Tag ${tag} already points at ${sha}; nothing to do (no version bump since last release).`);
+            if (existingSha !== sha) {
+              core.setFailed(`Tag ${tag} already exists and points at a different commit (${existingSha} != ${sha}). Existing tags are never moved: bump the VERSION file to publish a new release.`);
               return;
             }
-            core.setFailed(`Tag ${tag} already exists and points at a different commit (${existingSha} != ${sha}). Existing tags are never moved: bump the VERSION file to publish a new release.`);
-            return;
-          }
 
-          // Tag the exact tested commit SHA, not just the branch head, so the
-          // release always corresponds to a commit that passed the build job.
-          await github.rest.git.createRef({
-            owner,
-            repo,
-            ref: `refs/tags/${tag}`,
-            sha,
-          });
-          core.info(`Created tag ${tag} at ${sha}.`);
+            try {
+              await github.rest.repos.getReleaseByTag({ owner, repo, tag });
+              core.info(`Tag ${tag} and its release already exist for ${sha}; nothing to do.`);
+              return;
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+              core.warning(`Tag ${tag} already points at ${sha}, but its release is missing; creating it now.`);
+            }
+          } else {
+            // Tag the exact tested commit SHA, not just the branch head.
+            await github.rest.git.createRef({
+              owner,
+              repo,
+              ref: `refs/tags/${tag}`,
+              sha,
+            });
+            core.info(`Created tag ${tag} at ${sha}.`);
+          }
 
           await github.rest.repos.createRelease({
             owner,
