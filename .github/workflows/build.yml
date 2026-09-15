@@ -29,6 +29,11 @@ jobs:
 
     - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
+    # Run fast, mocked unit tests for the devskim-version resolution logic
+    # in entrypoint.sh (no Docker/network required).
+    - name: Unit test entrypoint version handling
+      run: bash tests/entrypoint_test.sh
+
     # Check that dockerfile can be built
     - name: Build action image
       run: docker build . --file Dockerfile
@@ -36,6 +41,21 @@ jobs:
     # Can the action run successful against the repo
     - name: Self test action
       uses: ./
+
+    # Exercise the devskim-version override end-to-end against a real,
+    # different published DevSkim CLI release to confirm the input is wired
+    # through action.yml/entrypoint.sh and that the scan still succeeds.
+    # NOTE: 1.0.70 is only used here as "a different published version than
+    # the pinned default" for wiring/integration coverage. If this exact
+    # version is ever unlisted from nuget.org, update it to another
+    # currently-published Microsoft.CST.DevSkim.Cli version that differs
+    # from DEVSKIM_CLI_VERSION in the Dockerfile.
+    - name: Self test action with devskim-version override
+      uses: ./
+      with:
+        output-filename: devskim-results-override.sarif
+        devskim-version: '1.0.70'
+
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
@@ -57,3 +77,91 @@ jobs:
       uses: github/codeql-action/upload-sarif@42947a340483f03ba47bb1a039b2c519aab3df85 # v3.37.8
       with:
         sarif_file: devskim-results.sarif
+
+  # Automatically tag and release a new action version once the build/test
+  # job above succeeds, but only for trusted, already-tested commits pushed
+  # directly to main - never for pull requests or other branches, and never
+  # by moving an existing tag. This intentionally does not rely on a tag
+  # push re-triggering a separate workflow: the tag and release are both
+  # created here, in the same job, using the exact SHA that was just tested.
+  release:
+    name: Tag and release
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: devskim-action-release
+      cancel-in-progress: false
+    permissions:
+      # Only this job gets write access, and only to create a new tag/release
+      # for a commit that has already passed the build job above. No PAT or
+      # additional secrets are used.
+      contents: write
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Tag and publish release for the tested commit
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const version = fs.readFileSync('VERSION', 'utf8').trim();
+
+          if (!/^\d+\.\d+\.\d+$/.test(version)) {
+            core.setFailed(`VERSION file contains an unsupported version string: '${version}'. Expected an exact SemVer such as 2.0.0.`);
+            return;
+          }
+
+          const tag = `v${version}`;
+          const sha = context.sha;
+          const { owner, repo } = context.repo;
+
+          let existing = null;
+          try {
+            existing = await github.rest.git.getRef({ owner, repo, ref: `tags/${tag}` });
+          } catch (error) {
+            if (error.status !== 404) {
+              throw error;
+            }
+            // 404 means the tag does not exist yet; keep `existing` explicitly null.
+            existing = null;
+          }
+
+          if (existing) {
+            const existingSha = existing.data.object.sha;
+            if (existingSha !== sha) {
+              core.setFailed(`Tag ${tag} already exists and points at a different commit (${existingSha} != ${sha}). Existing tags are never moved: bump the VERSION file to publish a new release.`);
+              return;
+            }
+
+            try {
+              await github.rest.repos.getReleaseByTag({ owner, repo, tag });
+              core.info(`Tag ${tag} and its release already exist for ${sha}; nothing to do.`);
+              return;
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+              core.warning(`Tag ${tag} already points at ${sha}, but its release is missing; creating it now.`);
+            }
+          } else {
+            // Tag the exact tested commit SHA, not just the branch head.
+            await github.rest.git.createRef({
+              owner,
+              repo,
+              ref: `refs/tags/${tag}`,
+              sha,
+            });
+            core.info(`Created tag ${tag} at ${sha}.`);
+          }
+
+          await github.rest.repos.createRelease({
+            owner,
+            repo,
+            tag_name: tag,
+            name: tag,
+            target_commitish: sha,
+            generate_release_notes: true,
+          });
+          core.info(`Published release ${tag}.`);
